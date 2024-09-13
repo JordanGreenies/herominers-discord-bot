@@ -90,9 +90,9 @@ heroStream.on('message', (message) => {
 				const badShareEmoji = '❌';
 				const shareStatus = shareType === 'good' ? `${goodShareEmoji} Good share` : `${badShareEmoji} Stale share`;
 				if (blockFound && config.heroMiners.reportBlocks)
-					message = `\`[${timeStamp}] 🔔 Block found! ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerType} ${workerStr} worker\``;
+					message = `\`[${timeStamp}] 🔔 Block found! ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerStr} worker ${worker}\``;
 				else if ((shareType === 'good' && config.heroMiners.reportGoodShares) || (shareType === 'stale' && config.heroMiners.reportStaleShares))
-					message = `\`[${timeStamp}] ${shareStatus} ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerType} ${workerStr} worker\``;
+					message = `\`[${timeStamp}] ${shareStatus} ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerStr} worker ${worker}\``;
 				break;
 			case 'retarget':
 				if (config.heroMiners.reportRetargetting === false) break;
