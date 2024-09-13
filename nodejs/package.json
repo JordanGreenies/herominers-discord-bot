@@ -7,9 +7,8 @@
     "start": "npm i discord.js@latest && npm i node-fetch@latest && node bot.js"
   },
   "dependencies": {
-    "discord.js": "^14.16.2",
-    "node-fetch": "^3.3.2",
-    "node-telegram-bot-api": "latest"
+    "discord.js": "latest",
+    "node-fetch": "latest"
   },
   "author": "JordanGreen",
   "license": "GNU"
