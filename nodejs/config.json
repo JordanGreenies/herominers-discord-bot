@@ -12,6 +12,6 @@
   },
   "discord": {
     "token": "YOUR_DISCORD_BOT_TOKEN",
-	"channelId": "CHANNEL_ID_TO_SEND_MESSAGES"
+    "channelId": "CHANNEL_ID_TO_SEND_MESSAGES"
   }
 }
