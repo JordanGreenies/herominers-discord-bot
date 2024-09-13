@@ -9,4 +9,4 @@
  4. Start the bot with docker (docker-compose up)
 
 ## Limitations
-* This is for one mining address only
+* This is for one mining address only and one discord server only
