@@ -77,12 +77,11 @@ heroStream.on('message', (message) => {
 		const shareType = data.shareType || 'N/A';
 		const isSolo = data.solo || false;
 		const suffix = config.heroMiners.hashSuffix;
-		const workerStr = isSolo ? 'solo working' : 'pool working';
+		const workerStr = isSolo ? 'solo' : 'pool';
 
 		let message = '';
 		switch (data.type) {
 			case 'share':
-				const workerType = isSolo ? 'solo worker' : 'pool worker';
 				const nonce = data.nonce || 'N/A';
 				const shareDiff = convertHashrate(data.shareDiff) || 'N/A';
 				const minerDiff = convertHashrate(data.minerDiff) || 'N/A';
@@ -91,9 +90,9 @@ heroStream.on('message', (message) => {
 				const badShareEmoji = '❌';
 				const shareStatus = shareType === 'good' ? `${goodShareEmoji} Good share` : `${badShareEmoji} Stale share`;
 				if (blockFound && config.heroMiners.reportBlocks)
-					message = `\`[${timeStamp}] 🔔 Block found! ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerType} ${worker}\``;
+					message = `\`[${timeStamp}] 🔔 Block found! ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerType} ${workerStr} worker\``;
 				else if ((shareType === 'good' && config.heroMiners.reportGoodShares) || (shareType === 'stale' && config.heroMiners.reportStaleShares))
-					message = `\`[${timeStamp}] ${shareStatus} ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerType} ${worker}\``;
+					message = `\`[${timeStamp}] ${shareStatus} ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerType} ${workerStr} worker\``;
 				break;
 			case 'retarget':
 				if (config.heroMiners.reportRetargetting === false) break;
@@ -102,10 +101,10 @@ heroStream.on('message', (message) => {
 				message = `\`[${timeStamp}] 🔀 Retargetting difficulty for ${worker} from ${oldDiff.value} ${oldDiff.suffix} to ${newDiff.value} ${newDiff.suffix}\``;
 				break;
 			case 'disconnect':
-				message = `\`[${timeStamp}] 🔌 ${worker} disconnected from ${workerStr}!\``;
+				message = `\`[${timeStamp}] 🔌 ${worker} disconnected from ${workerStr} working!\``;
 				break;
 			case 'connect':
-				message = `\`[${timeStamp}] 🔗 ${worker} connected for ${workerStr}!\``;
+				message = `\`[${timeStamp}] 🔗 ${worker} connected for ${workerStr} working!\``;
 				break;			
 			default:
 				message = `\`[${timeStamp}] Unknown type: ${data.type}\``;
