@@ -1,18 +1,15 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const {
-	Worker
-} = require('worker_threads');
+const {Worker} = require('worker_threads');
 const path = require('path');
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
 const streamUrl = config.heroMiners.streamUrl;
 const statsUrl = config.heroMiners.statsUrl;
-const {
-	convertHashrate
-} = require('./utils');
+const {convertHashrate} = require('./utils');
 let networkDifficulty = {};
 let minigHashRate = {};
 let discordReady = false;
+
 //Setup Discord client
 const discordClient = new Discord.Client({
 	intents: [
@@ -31,12 +28,14 @@ function sendDiscordMessage(text) {
 		console.error("Channel not found.");
 	}
 }
+
 // Create a worker to get the stats
 const heroStats = new Worker(path.resolve(__dirname, 'urlWorker.js'), {
 	workerData: {
 		statsUrl
 	}
 });
+
 heroStats.on('message', (data) => {
 	const lastDifficulty = networkDifficulty.originalValue || 0;
 	const lastHashrate = minigHashRate.originalValue || 0;
@@ -63,24 +62,28 @@ heroStats.on('message', (data) => {
 			});
 	}
 });
+
 const heroStream = new Worker(path.resolve(__dirname, 'streamHandler.js'), {
 	workerData: {
 		streamUrl
 	}
 });
+
 // Handle messages from herominers
 heroStream.on('message', (message) => {
 	const formatMessage = (data) => {
 		const timeStamp = new Date().toLocaleTimeString();
 		const worker = data.worker;
 		const shareType = data.shareType || 'N/A';
-		const nonce = data.nonce || 'N/A';
 		const isSolo = data.solo || false;
-		const workerType = isSolo ? 'solo worker' : 'pool worker';
 		const suffix = config.heroMiners.hashSuffix;
+		const workerStr = isSolo ? 'solo working' : 'pool working';
+
 		let message = '';
 		switch (data.type) {
 			case 'share':
+				const workerType = isSolo ? 'solo worker' : 'pool worker';
+				const nonce = data.nonce || 'N/A';
 				const shareDiff = convertHashrate(data.shareDiff) || 'N/A';
 				const minerDiff = convertHashrate(data.minerDiff) || 'N/A';
 				const blockFound = networkDifficulty.originalValue && data.shareDiff > networkDifficulty.originalValue;
@@ -98,6 +101,12 @@ heroStream.on('message', (message) => {
 				const newDiff = convertHashrate(data.newDiff) || 'N/A';
 				message = `\`[${timeStamp}] 🔀 Retargetting difficulty for ${worker} from ${oldDiff.value} ${oldDiff.suffix} to ${newDiff.value} ${newDiff.suffix}\``;
 				break;
+			case 'disconnect':
+				message = `\`[${timeStamp}] 🔌 ${worker} disconnected from ${workerStr}!\``;
+				break;
+			case 'connect':
+				message = `\`[${timeStamp}] 🔗 ${worker} connected for ${workerStr}!\``;
+				break;			
 			default:
 				message = `\`[${timeStamp}] Unknown type: ${data.type}\``;
 		}
@@ -108,6 +117,7 @@ heroStream.on('message', (message) => {
 		if (msg) sendDiscordMessage("`" + msg + "`");
 	}
 });
+
 // Discord Bot Setup
 discordClient.once('ready', () => {
 	console.log('Discord bot is ready!');
