@@ -1,6 +1,7 @@
 # HeroMiners discord bot for miners https://herominers.com
 ![Discord_OYinKLsBCg](https://github.com/user-attachments/assets/aea3addd-6b77-4cd9-a894-713625e72a65)
-![Discord_igtPYQoOi0](https://github.com/user-attachments/assets/cfd5302b-8840-4986-a675-dad759c7016a)
+![Discord_AlVp7xWJ0X](https://github.com/user-attachments/assets/2afc3697-45d6-4078-90c8-ef8d439d6b9d)
+
 
 ## Installation (docker)
  1. Create a discord bot and add it to a server (https://discord.com/developers/applications)
