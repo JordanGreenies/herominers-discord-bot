@@ -98,7 +98,7 @@ heroStream.on('message', (message) => {
 				if (config.heroMiners.reportRetargetting === false) break;
 				const oldDiff = convertHashrate(data.oldDiff) || 'N/A';
 				const newDiff = convertHashrate(data.newDiff) || 'N/A';
-				message = `\`[${timeStamp}] 🔀 Retargetting difficulty for ${worker} from ${oldDiff.value} ${oldDiff.suffix} to ${newDiff.value} ${newDiff.suffix}\``;
+				message = `\`[${timeStamp}] 🔀 Retargetting difficulty for worker ${worker} from ${oldDiff.value} ${oldDiff.suffix} to ${newDiff.value} ${newDiff.suffix}\``;
 				break;
 			case 'disconnect':
 				message = `\`[${timeStamp}] 🔌 ${worker} disconnected from ${workerStr} working!\``;
