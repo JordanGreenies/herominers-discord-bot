@@ -16,7 +16,7 @@ function convertHashrate(hashrate) {
     for (const threshold of thresholds) {
         if (hashrate >= threshold.value) {
             return {
-				originalValue: hashrate,
+		originalValue: hashrate,
                 value: (hashrate / threshold.value).toFixed(2),
                 suffix: threshold.suffix
             };
@@ -24,7 +24,7 @@ function convertHashrate(hashrate) {
     }
     
     return {
-		originalValue: hashrate,
+	originalValue: hashrate,
         value: hashrate.toFixed(2),
         suffix: 'H'
     };
