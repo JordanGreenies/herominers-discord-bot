@@ -7,3 +7,6 @@
  2. Clone this repo (git clone https://github.com/JordanGreenies/herominers-discord-bot)
  3. Edit the config file: ./nodejs/config.json (streamUrl, statsUrl, discord.token, discord.channelId)
  4. Start the bot with docker (docker-compose up)
+
+## Limitations
+* This is for one mining address only
