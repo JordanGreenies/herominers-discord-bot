@@ -1,0 +1,16 @@
+{
+  "name": "herominers-bot",
+  "version": "1.0.0",
+  "description": "A Discord bot for herominers to output shares, blocks and hashrate",
+  "main": "bot.js",
+  "scripts": {
+    "start": "npm i discord.js@latest && npm i node-fetch@latest && node bot.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.2",
+    "node-fetch": "^3.3.2",
+    "node-telegram-bot-api": "latest"
+  },
+  "author": "JordanGreen",
+  "license": "GNU"
+}
