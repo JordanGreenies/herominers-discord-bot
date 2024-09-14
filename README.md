@@ -8,7 +8,8 @@
  1. Create a discord bot and add it to a server (https://discord.com/developers/applications)
  2. Clone this repo (git clone https://github.com/JordanGreenies/herominers-discord-bot)
  3. Edit the config file: ./nodejs/config.json (heroMiners.streamUrl, heroMiners.statsUrl, discord.token, discord.channelId)
- 4. Start the bot with docker (docker-compose up)
+ 4. Edit the timezone inside docker-compose.yml
+ 5. Start the bot with docker (docker-compose up)
 
 ## Limitations
 * Currently can only handle one mining address
