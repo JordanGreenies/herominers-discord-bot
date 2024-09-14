@@ -6,6 +6,7 @@ services:
     working_dir: /home/node/app
     environment:
       - NODE_ENV=production
+      - TZ=Europe/London      
     volumes:
       - ./nodejs:/home/node/app
     command: "npm start"
