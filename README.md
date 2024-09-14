@@ -1,6 +1,7 @@
 # HeroMiners discord bot for miners https://herominers.com
 ![Discord_OYinKLsBCg](https://github.com/user-attachments/assets/aea3addd-6b77-4cd9-a894-713625e72a65)
 ![Discord_AlVp7xWJ0X](https://github.com/user-attachments/assets/2afc3697-45d6-4078-90c8-ef8d439d6b9d)
+![Discord_iWGuvixjpH](https://github.com/user-attachments/assets/685d9669-789f-40a5-9fd6-bc10a4bc7a8a)
 
 
 ## Installation (docker)
