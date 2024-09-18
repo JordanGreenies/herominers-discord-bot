@@ -91,17 +91,17 @@ const startWorker = (url) => {
 			const formatLog = (logString) => {
 				const parts = logString.split(':');	
 				const hash = parts[0];
-				const url = `[Payment processed](${explorerUrl}${hash})`;
+				const url = `${explorerUrl}${hash}`;
 				const value = (parts[1] / coinUnits).toFixed(4);
 				const timeStamp = new Date().toLocaleTimeString();
-				const formattedLog = `[${timeStamp}] 💵 ${url}: ${value} ${coinSymbol}`;		
+				const formattedLog = `[${timeStamp}] 💵 Payment processed: ${value} ${coinSymbol}`;		
 				return formattedLog;
 			};
 			if(config.heroMiners.reportPayments && paymentsArray.length > 0)
 			{
 				const newValues = payments.filter(item => !paymentsArray.includes(item));
 				newValues.forEach((value) => {
-					sendDiscordMessage("`" + formatLog(value) + "`");
+					sendDiscordMessage("[`" + formatLog(value) + "`]("+url+")");
 				});
 			}	
 			paymentsArray = payments;	
