@@ -94,11 +94,11 @@ const startWorker = (url) => {
 				const formattedLog = `[${timeStamp}] 💵 Payment [${hash}] processed, ${value} ${coinSymbol}`;		
 				return formattedLog;
 			};
-			if(paymentsArray.length > 0)
+			if(config.heroMiners.reportPayments && paymentsArray.length > 0)
 			{
 				const newValues = payments.filter(item => !paymentsArray.includes(item));
 				newValues.forEach((value) => {
-					if (config.heroMiners.reportPayments) sendDiscordMessage("`" + formatLog(value) + "`");
+					sendDiscordMessage("`" + formatLog(value) + "`");
 				});
 			}		
 			paymentsArray = payments;	
