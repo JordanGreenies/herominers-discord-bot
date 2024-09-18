@@ -89,10 +89,9 @@ const startWorker = (url) => {
 			const formatLog = (logString) => {
 				const parts = logString.split(':');	
 				const hash = parts[0];
-				const url = `[Payment processed](hhttps://explorer.alephium.org/transactions/${hash})`;
 				const value = (parts[1] / coinUnits).toFixed(4);
 				const timeStamp = new Date().toLocaleTimeString();
-				const formattedLog = `[${timeStamp}] 💵 ${url}: ${value} ${coinSymbol}`;		
+				const formattedLog = `[${timeStamp}] 💵 Payment [${hash}] processed, ${value} ${coinSymbol}`;		
 				return formattedLog;
 			};
 			if(config.heroMiners.reportPayments && paymentsArray.length > 0)
@@ -101,7 +100,7 @@ const startWorker = (url) => {
 				newValues.forEach((value) => {
 					sendDiscordMessage("`" + formatLog(value) + "`");
 				});
-			}	
+			}		
 			paymentsArray = payments;	
 		}
     });
