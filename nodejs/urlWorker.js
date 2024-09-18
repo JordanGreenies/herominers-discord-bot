@@ -1,14 +1,14 @@
 const { parentPort, workerData } = require('worker_threads');
 
-(async () => {
+const fetchDataFunction = async (statsUrl, fetchInterval = 10000) => {
     // Dynamically import the fetch module
     const fetchModule = await import('node-fetch');
     const fetch = fetchModule.default;
 
     // Function to fetch and parse JSON data
-    const fetchData = async (statsUrl) => {
+    const fetchData = async (url) => {
         try {
-            const response = await fetch(statsUrl);
+            const response = await fetch(url);
             const data = await response.json();
             return data;
         } catch (error) {
@@ -17,15 +17,11 @@ const { parentPort, workerData } = require('worker_threads');
         }
     };
 
-    // Set up interval to fetch data every 10 seconds
-    const fetchInterval = 10000; // 10 seconds
-
-    const statsUrl = workerData.statsUrl;
-
+    // Set up interval to fetch data
     const intervalId = setInterval(async () => {
         const data = await fetchData(statsUrl);
         if (data) {
-            parentPort.postMessage(data); // Send data to parent
+            parentPort.postMessage({ statsUrl, data }); // Send data to parent
         }
     }, fetchInterval);
 
@@ -34,4 +30,7 @@ const { parentPort, workerData } = require('worker_threads');
             clearInterval(intervalId); // Stop fetching when 'stop' message is received
         }
     });
-})();
+};
+
+// Call the function with the URL from workerData
+fetchDataFunction(workerData.statsUrl);
