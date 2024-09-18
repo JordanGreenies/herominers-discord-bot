@@ -86,7 +86,7 @@ heroStream.on('message', (message) => {
 				const shareDiff = convertHashrate(data.shareDiff) || 'N/A';
 				const minerDiff = convertHashrate(data.minerDiff) || 'N/A';
 				const blockFound = networkDifficulty.originalValue && data.shareDiff > networkDifficulty.originalValue;
-				const shareStatus = shareType === 'good' ? `✅ Good share` : `❌ Stale share`;
+				const shareStatus = shareType === 'good' ? `✅ Good share` : `❌ Stale share accepted`;
 				if (shareType === 'good' && blockFound && config.heroMiners.reportBlocks)
 					message = `\`[${timeStamp}] 🔔 Block found! ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerStr} worker ${worker}\``;
 				else if ((shareType === 'good' && config.heroMiners.reportGoodShares) || (shareType === 'stale' && config.heroMiners.reportStaleShares))
