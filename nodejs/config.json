@@ -2,7 +2,8 @@
   "heroMiners": {
 	"streamUrl": "https://PUT_COIN_HERE.herominers.com/api/workers_stream?address=YOUR_ADDRESS",
 	"statsUrl": "https://PUT_COIN_HERE.herominers.com/api/stats?address=YOUR_ADDRESS",
-	"statsUrl2": "https://PUT_COIN_HERE.herominers.com/api/stats_address?address=YOUR_ADDRESS",	  
+	"statsUrl2": "https://PUT_COIN_HERE.herominers.com/api/stats_address?address=YOUR_ADDRESS",
+	"coinExplorerUrl": "https://explorer.COIN_EXPLORER_URL.org/transactions/",
 	"reportGoodShares" : true,
 	"reportStaleShares" : true,
 	"reportBlocks" : true,
