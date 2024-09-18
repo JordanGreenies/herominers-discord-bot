@@ -4,11 +4,14 @@ const {Worker} = require('worker_threads');
 const path = require('path');
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
 const streamUrl = config.heroMiners.streamUrl;
-const statsUrl = config.heroMiners.statsUrl;
-const {convertHashrate} = require('./utils');
-let networkDifficulty = {};
-let minigHashRate = {};
+let paymentsArray = [];
+let networkDifficulty = [];
+let minigHashRate = [];
 let discordReady = false;
+let coinUnits = 0;
+let coinSymbol = "";
+
+const {convertHashrate} = require('./utils');
 
 //Setup Discord client
 const discordClient = new Discord.Client({
@@ -29,39 +32,82 @@ function sendDiscordMessage(text) {
 	}
 }
 
-// Create a worker to get the stats
-const heroStats = new Worker(path.resolve(__dirname, 'urlWorker.js'), {
-	workerData: {
-		statsUrl
-	}
-});
+function combineStringsWithTimestamps(arr) {
+    const combinedArray = []; 
+    for (let i = 0; i < arr.length; i += 2) {
+        const combinedString = `${arr[i]}:${arr[i+1]}`;
+        combinedArray.push(combinedString);
+    }
+    return combinedArray;
+}
 
-heroStats.on('message', (data) => {
-	const lastDifficulty = networkDifficulty.originalValue || 0;
-	const lastHashrate = minigHashRate.originalValue || 0;
-	networkDifficulty = convertHashrate(data.network.difficulty)
-	const mHr = data.miner.hashrate || 0;
-	const sHr = data.solo_miner.hashrate || 0;
-	minigHashRate = convertHashrate(mHr + sHr);
-	if (discordReady) {
-		const timeStamp = new Date().toLocaleTimeString();
-		//console.log(`Network difficulty: ${networkDifficulty.value} ${networkDifficulty.suffix}`);
-		//console.log(`Your hashrate: ${minigHashRate.value} ${minigHashRate.suffix}`);
-		if (config.heroMiners.reportNetworkDifficulty && (lastDifficulty != networkDifficulty.originalValue))
-			sendDiscordMessage("`" + `[${timeStamp}] ☁ Network difficulty: ${networkDifficulty.value} ${networkDifficulty.suffix}` + "`");
-		if (config.heroMiners.reportHashrate && (lastHashrate != minigHashRate.originalValue)) {
-			let hashEmoji = `⏫`;
-			if (minigHashRate.originalValue < lastHashrate) hashEmoji = `⏬`;
-			sendDiscordMessage("`" + `[${timeStamp}] ${hashEmoji} Hashrate: ${minigHashRate.value} ${minigHashRate.suffix}/s` + "`");
+const startWorker = (url) => {
+    const worker = new Worker(path.resolve(__dirname, 'urlWorker.js'), {
+        workerData: { statsUrl: url }
+    });
+
+    worker.on('message', (message) => {
+		if (!discordReady) return;
+		if (!message.data) return;	
+		if(message.statsUrl == config.heroMiners.statsUrl)
+		{		
+			if(!message.data.config) return;
+
+			coinUnits = message.data.config.coinUnits;
+			coinSymbol = message.data.config.symbol;
+
+			const lastDifficulty = networkDifficulty.originalValue || 0;
+			const lastHashrate = minigHashRate.originalValue || 0;
+			networkDifficulty = convertHashrate(message.data.network.difficulty)
+			const mHr = message.data.miner.hashrate || 0;
+			const sHr = message.data.solo_miner.hashrate || 0;
+			minigHashRate = convertHashrate(mHr + sHr);
+			const timeStamp = new Date().toLocaleTimeString();
+			//console.log(`Network difficulty: ${networkDifficulty.value} ${networkDifficulty.suffix}`);
+			//console.log(`Your hashrate: ${minigHashRate.value} ${minigHashRate.suffix}`);
+			if (config.heroMiners.reportNetworkDifficulty && (lastDifficulty != networkDifficulty.originalValue))
+				sendDiscordMessage("`" + `[${timeStamp}] ☁ Network difficulty: ${networkDifficulty.value} ${networkDifficulty.suffix}` + "`");
+			if (config.heroMiners.reportHashrate && (lastHashrate != minigHashRate.originalValue)) {
+				let hashEmoji = `⏫`;
+				if (minigHashRate.originalValue < lastHashrate) hashEmoji = `⏬`;
+				sendDiscordMessage("`" + `[${timeStamp}] ${hashEmoji} Hashrate: ${minigHashRate.value} ${minigHashRate.suffix}/s` + "`");
+			}
+			if (config.heroMiners.hashratePresence && (lastHashrate != minigHashRate.originalValue))
+				discordClient.user.setPresence({
+					activities: [{
+						name: `Mining: ${minigHashRate.value} ${minigHashRate.suffix}/s`
+					}]
+				});			
 		}
-		if (config.heroMiners.hashratePresence && (lastHashrate != minigHashRate.originalValue))
-			discordClient.user.setPresence({
-				activities: [{
-					name: `Mining: ${minigHashRate.value} ${minigHashRate.suffix}/s`
-				}]
-			});
-	}
-});
+		else if(message.statsUrl == config.heroMiners.statsUrl2)
+		{
+			if(!message.data.payments || coinUnits == 0) return;
+			
+			let payments = combineStringsWithTimestamps(message.data.payments);
+			if(payments.length == 0) return;
+			
+			const formatLog = (logString) => {
+				const parts = logString.split(':');	
+				const hash = parts[0];
+				const value = (parts[1] / coinUnits).toFixed(4);
+				const timeStamp = new Date().toLocaleTimeString();
+				const formattedLog = `[${timeStamp}] 💵 Payment [${hash}] processed, ${value} ${coinSymbol}`;		
+				return formattedLog;
+			};
+			if(paymentsArray.length > 0)
+			{
+				const newValues = payments.filter(item => !paymentsArray.includes(item));
+				newValues.forEach((value) => {
+					if (config.heroMiners.reportPayments) sendDiscordMessage("`" + formatLog(value) + "`");
+				});
+			}		
+			paymentsArray = payments;	
+		}
+    });
+};
+
+startWorker(config.heroMiners.statsUrl);
+startWorker(config.heroMiners.statsUrl2);
 
 const heroStream = new Worker(path.resolve(__dirname, 'streamHandler.js'), {
 	workerData: {
@@ -86,7 +132,7 @@ heroStream.on('message', (message) => {
 				const shareDiff = convertHashrate(data.shareDiff) || 'N/A';
 				const minerDiff = convertHashrate(data.minerDiff) || 'N/A';
 				const blockFound = networkDifficulty.originalValue && data.shareDiff > networkDifficulty.originalValue;
-				const shareStatus = shareType === 'good' ? `✅ Good share` : `❌ Stale share accepted`;
+				const shareStatus = shareType === 'good' ? `✅ Good share` : `❌ Stale share`;
 				if (shareType === 'good' && blockFound && config.heroMiners.reportBlocks)
 					message = `\`[${timeStamp}] 🔔 Block found! ${nonce} of ${shareDiff.value} ${shareDiff.suffix} / ${minerDiff.value} ${minerDiff.suffix} from ${workerStr} worker ${worker}\``;
 				else if ((shareType === 'good' && config.heroMiners.reportGoodShares) || (shareType === 'stale' && config.heroMiners.reportStaleShares))
