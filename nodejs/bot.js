@@ -94,9 +94,8 @@ const startWorker = (url) => {
 				const value = (parts[1] / coinUnits).toFixed(4);
 				const paymentUrl = `${explorerUrl}${hash}`;
 				const timeStamp = new Date().toLocaleTimeString();
-				let formattedLog = `[${timeStamp}] 💵 Payment processed: ${value} ${coinSymbol}`;	
-				formattedLog = "[`" + formattedLog+ "`]("+paymentUrl+")";
-				return formattedLog;
+				return `[\`${timeStamp}] 💵 Payment processed: ${value} ${coinSymbol}\`](${paymentUrl})`;
+
 			};
 			if(config.heroMiners.reportPayments && paymentsArray.length > 0)
 			{
